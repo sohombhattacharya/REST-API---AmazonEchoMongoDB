@@ -27,7 +27,7 @@ var customerSchema = new Schema({
         zip: String
     },
     friends: []
-}, { versionKey: false });
+}, { versionKey: false, collection: CUSTOMERS_COLLECTION});
 //var Friend = mongoose.model("Friend", friendSchema); 
 var Customer = mongoose.model("Customer", customerSchema); 
 
@@ -57,39 +57,52 @@ router.route("/").get(function(req, res) {
 router.route("/customers")
 
     .get(function(req, res){
-    
+        Customer.find({}, function(err, customers){
+            if (err){
+                var response = { error: "could not get all customers"};
+                res.json(response);
+            }
+            else    
+                res.json(customers);
+        }); 
     })
 
     .post(function(req, res){
-        var newCustomer = new Customer({
-            "_id": "57f5ae7c360f81f104543a888",
-            "first_name": "test",
-            "last_name": "test123",
-            "address": {
-                "street_number": "ttt",
-                "street_name": "stst",
-                "city": "State College",
-                "state": "PA",
-                "zip": "16802"
-            },
-            "friends": [
-                {
-                    "id": "ee",
-                    "first_name": "ytu",
-                    "last_name": "dfgd"
-                },
-                {
-                    "id": "st",
-                    "first_name": "bfc",
-                    "last_name": "cch"
-                }
-            ]
-        });
-        
+//        var newCustomer = new Customer({
+//            "_id": "57f5ae7c360f81f104543a888",
+//            "first_name": "test",
+//            "last_name": "test123",
+//            "address": {
+//                "street_number": "ttt",
+//                "street_name": "stst",
+//                "city": "State College",
+//                "state": "PA",
+//                "zip": "16802"
+//            },
+//            "friends": [
+//                {
+//                    "id": "ee",
+//                    "first_name": "ytu",
+//                    "last_name": "dfgd"
+//                },
+//                {
+//                    "id": "st",
+//                    "first_name": "bfc",
+//                    "last_name": "cch"
+//                }
+//            ]
+//        });
+        console.log(req.body); 
+        var newCustomer = new Customer(req.body);
         newCustomer.save(function(err){
-            if (err) console.log("error adding customer"); 
-            else
-                res.json({ message: "added customer" }); 
+            if (err){
+                var response = { error: "could not add new customer"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "added customer"};    
+                res.json(response); 
+            }
         }); 
     });
 
@@ -97,16 +110,56 @@ router.route("/customers")
 router.route("/customers/:id")
 
     .get(function(req, res){
-
+        Customer.find({_id: req.params.id}, function(err, customer){ 
+            if (err){
+                var response = { error: "could not get customer"};
+                res.json(response);
+            }
+            else
+                res.json(customer[0]);
+        }); 
     })
 
     .put(function(req, res){
+
     
+    
+        Customer.findOneAndUpdate({_id: req.params.id}, newCustomer, function(err, user) {
+            if (err){
+                var response = { error: "could not edit customer"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "edited customer"};    
+                res.json(response); 
+            }
+        });    
+
     })
 
     .delete(function(req, res){
-
+        Customer.findOneAndRemove({_id: req.params.id}, function(err) {
+          if (err){
+                var response = { error: "could not find and delete customer"};
+                res.json(response);
+            }
+            else{
+                response = { success: "found and deleted customer"};    
+                res.json(response); 
+            }
+        });        
     });
 
-
+router.route("/customers/:id/friends")
+    
+    .get(function(req, res){
+        Customer.find({_id: req.params.id}, function(err, customer){
+            if (err){
+                var response = { error: "could not get all customers"};
+                res.json(response);
+            }
+            else
+                res.json(customer[0].friends);
+        });     
+    }); 
 
