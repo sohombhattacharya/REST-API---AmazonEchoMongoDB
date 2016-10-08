@@ -7,7 +7,7 @@ var CUSTOMERS_COLLECTION = "customers";
 var port = process.env.PORT || 8080;        
 var router = express.Router();              
 var db; 
-var mongodb_uri = "mongodb://test:test123@ds053136.mlab.com:53136/psu-capitalone";
+var mongodb_uri = "mongodb://test:test123@ds053136.mlab.com:53136/psu-capitalone"; // NEED TO USE HEROKU CONFIG FILES FOR USER/PASS
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -31,5 +31,3 @@ router.get('/', function(req, res) {
 //    id = req.params.id
     res.json({ message: "testing api" });   
 });
-//app.use('/api', router);
-//app.listen(port);
