@@ -312,6 +312,9 @@ router.route("/customers/:id/friends/:friendID")
                     res.json(response);
                 }
             }
-        });          
+        }); 
+    
+    
+    
     });
 
