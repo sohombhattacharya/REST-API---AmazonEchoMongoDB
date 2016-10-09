@@ -10,11 +10,6 @@ var Schema = mongoose.Schema;
 var ObjectID = mongoose.Schema.Types.ObjectId;
 mongoose.Promise = global.Promise;
 var mongodb_uri = "mongodb://test:test123@ds053136.mlab.com:53136/psu-capitalone"; // NEED TO USE HEROKU CONFIG FILES FOR USER/PASS
-//var friendSchema = new Schema({
-//    id: String, 
-//    first_name: String, 
-//    last_name: String
-//});
 var customerSchema = new Schema({
     _id: String,
     first_name: String,
@@ -26,11 +21,9 @@ var customerSchema = new Schema({
         state: String,
         zip: String
     },
-    friends: []
+    friends: [{id: String, first_name: String, last_name: String}]
 }, { versionKey: false, collection: CUSTOMERS_COLLECTION});
-//var Friend = mongoose.model("Friend", friendSchema); 
 var Customer = mongoose.model("Customer", customerSchema); 
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 mongoose.connect(mongodb_uri, function(err, database){
@@ -39,7 +32,6 @@ mongoose.connect(mongodb_uri, function(err, database){
         console.log(err);
         process.exit(1);
     }
-    
     db = database; 
     console.log("Database connection successful"); 
     
@@ -54,7 +46,6 @@ router.route("/").get(function(req, res) {
 });
 
 router.route("/customers")
-
     .get(function(req, res){
         Customer.find({}, function(err, customers){
             if (err){
@@ -65,7 +56,6 @@ router.route("/customers")
                 res.json(customers);
         }); 
     })
-
     .post(function(req, res){
         var newCustomer = new Customer(req.body);
         newCustomer.save(function(err){
@@ -80,9 +70,7 @@ router.route("/customers")
         }); 
     });
 
-
 router.route("/customers/:id")
-
     .get(function(req, res){
         Customer.find({_id: req.params.id}, function(err, customer){ 
             if (err){
@@ -92,23 +80,6 @@ router.route("/customers/:id")
             else
                 res.json(customer[0]);
         }); 
-    })
-
-    .put(function(req, res){
-
-    //need to get new parameter names from user req.body
-    
-        Customer.findOneAndUpdate({_id: req.params.id}, newCustomer, function(err, user) {
-            if (err){
-                var response = { error: "could not edit customer"};
-                res.json(response); 
-            }
-            else{
-                response = { success: "edited customer"};    
-                res.json(response); 
-            }
-        });    
-
     })
 
     .delete(function(req, res){
@@ -124,16 +95,119 @@ router.route("/customers/:id")
         });        
     });
 
+router.route("/customers/:id/firstName/:new")
+    .put(function(req, res){
+        var newEdit = { first_name: req.params.new }
+        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
+            if (err){
+                var response = { error: "could not edit first name"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "edited first name"};    
+                res.json(response); 
+            }
+        });    
+    });
+
+router.route("/customers/:id/lastName/:new")
+    .put(function(req, res){
+        var newEdit = { last_name: req.params.new }
+        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
+            if (err){
+                var response = { error: "could not edit last name"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "edited last name"};    
+                res.json(response); 
+            }
+        });    
+    });
+router.route("/customers/:id/address/streetNumber/:new")
+    .put(function(req, res){
+        var newEdit = { "address.street_number": req.params.new }
+        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
+            if (err){
+                var response = { error: "could not edit street number"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "edited street number"};    
+                res.json(response); 
+            }
+        });    
+    });
+router.route("/customers/:id/address/streetName/:new")
+    .put(function(req, res){
+        var newEdit = { "address.street_name": req.params.new }
+        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
+            if (err){
+                var response = { error: "could not edit street name"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "edited street name"};    
+                res.json(response); 
+            }
+        });    
+    });
+router.route("/customers/:id/address/city/:new")
+    .put(function(req, res){
+        var newEdit = { "address.city": req.params.new }
+        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
+            if (err){
+                var response = { error: "could not edit city"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "edited city"};    
+                res.json(response); 
+            }
+        });    
+    });
+router.route("/customers/:id/address/state/:new")
+    .put(function(req, res){
+        var newEdit = { "address.state": req.params.new }
+        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
+            if (err){
+                var response = { error: "could not edit state"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "edited state"};    
+                res.json(response); 
+            }
+        });    
+    });
+router.route("/customers/:id/address/zip/:new")
+    .put(function(req, res){
+        var newEdit = { "address.zip": req.params.new }
+        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
+            if (err){
+                var response = { error: "could not edit zip"};
+                res.json(response); 
+            }
+            else{
+                response = { success: "edited zip"};    
+                res.json(response); 
+            }
+        });    
+    });
+
 router.route("/customers/:id/friends")
-    
     .get(function(req, res){
         Customer.find({_id: req.params.id}, function(err, customer){
             if (err){
-                var response = { error: "could not get all customers"};
+                var response = { error: "could not get friends"};
                 res.json(response);
             }
             else
                 res.json(customer[0].friends);
         });     
     }); 
+
+    .post(function(req, res){
+    
+    })
 
