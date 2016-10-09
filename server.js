@@ -313,8 +313,5 @@ router.route("/customers/:id/friends/:friendID")
                 }
             }
         }); 
-    
-    
-    
     });
 
