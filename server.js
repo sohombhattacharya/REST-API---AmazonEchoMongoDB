@@ -50,8 +50,7 @@ mongoose.connect(mongodb_uri, function(err, database){
 });
 
 router.route("/").get(function(req, res) {
-//    id = req.params.id
-    res.json({ message: "testing api" });   
+    res.json({ message: "capital one rest api" });   
 });
 
 router.route("/customers")
@@ -68,31 +67,6 @@ router.route("/customers")
     })
 
     .post(function(req, res){
-//        var newCustomer = new Customer({
-//            "_id": "57f5ae7c360f81f104543a888",
-//            "first_name": "test",
-//            "last_name": "test123",
-//            "address": {
-//                "street_number": "ttt",
-//                "street_name": "stst",
-//                "city": "State College",
-//                "state": "PA",
-//                "zip": "16802"
-//            },
-//            "friends": [
-//                {
-//                    "id": "ee",
-//                    "first_name": "ytu",
-//                    "last_name": "dfgd"
-//                },
-//                {
-//                    "id": "st",
-//                    "first_name": "bfc",
-//                    "last_name": "cch"
-//                }
-//            ]
-//        });
-        console.log(req.body); 
         var newCustomer = new Customer(req.body);
         newCustomer.save(function(err){
             if (err){
