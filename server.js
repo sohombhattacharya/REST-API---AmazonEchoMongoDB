@@ -96,7 +96,7 @@ router.route("/customers/:id")
 
     .put(function(req, res){
 
-    
+    //need to get new parameter names from user req.body
     
         Customer.findOneAndUpdate({_id: req.params.id}, newCustomer, function(err, user) {
             if (err){
