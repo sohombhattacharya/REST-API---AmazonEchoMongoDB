@@ -205,9 +205,113 @@ router.route("/customers/:id/friends")
             else
                 res.json(customer[0].friends);
         });     
-    }); 
+    }) 
 
     .post(function(req, res){
-    
-    })
+        Customer.find({_id: req.params.id}, function(err, customer){
+            var response; 
+            if (err){
+                response = { error: "could not get customer"};
+                res.json(response);
+            }
+            else{
+                var i; 
+                var bool = 0; 
+                for (i=0; i < customer[0].friends.length; i++){
+                    if (customer[0].friends[i].id == req.body.id)
+                        bool = 1; 
+                }
+                
+                if (bool == 1){
+                    response = { error: "friend already exists!"};
+                    res.json(response);
+                }
+                else{
+                    customer[0].friends.push(req.body); 
+                    customer[0].save(function(err){
+                        response = { success: "updated friends"};
+                        if (err){
+                            response = { error: "could not update friends"};
+                            res.json(response);
+                        }
+                        else
+                            res.json(response);
+                    });
+                }
+            }
+        });         
+    });
+
+router.route("/customers/:id/friends/:friendID/firstName/:newFirstName/lastName/:newLastName")
+    .put(function(req, res){
+        Customer.find({_id: req.params.id}, function(err, customer){
+            var response; 
+            if (err){
+                response = { error: "could not get customer"};
+                res.json(response);
+            }
+            else{
+                var i; 
+                var index = -1; 
+                for(i = 0; i < customer[0].friends.length; i++)
+                    if (customer[0].friends[i].id == req.params.friendID){
+                        index = i; 
+                        break;
+                    }
+                if(index != -1){ 
+                    customer[0].friends[index].first_name = req.params.newFirstName;  
+                    customer[0].friends[index].last_name = req.params.newLastName;
+                    customer[0].save(function(err){
+                        response = { success: "updated friend"};
+                        if (err){
+                            response = { error: "could not update friend"};
+                            res.json(response);
+                        }
+                        else
+                            res.json(response);
+                    });
+                }
+                else{
+                    response = { success: "input friend not a friend of the given customer"};
+                    res.json(response);
+                }
+            }
+        }); 
+    }); 
+
+router.route("/customers/:id/friends/:friendID")
+    .delete(function(req, res){
+        Customer.find({_id: req.params.id}, function(err, customer){
+            var response; 
+            if (err){
+                response = { error: "could not get customer"};
+                res.json(response);
+            }
+            else{
+                var i; 
+                var index = -1; 
+                var bool = 0; 
+                for(i = 0; i < customer[0].friends.length; i++)
+                    if (customer[0].friends[i].id == req.params.friendID)
+                        index = i; 
+                
+                if(index != -1){ 
+                    customer[0].friends.splice(index, 1); 
+                    customer[0].save(function(err){
+                        response = { success: "deleted friend"};
+                        if (err){
+                            response = { error: "could not delete friend"};
+                            res.json(response);
+                        }
+                        else
+                            res.json(response);
+                    });
+                }
+                else{
+                    response = { success: "input friend not a friend of the given customer"};
+                    res.json(response);
+                }
+            }
+        });          
+    });
 
