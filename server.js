@@ -26,7 +26,6 @@ mongoose.connect(config.DBHost, function(err, database){
         console.log("App is up"); 
     });
 });
-console.log(config.DBHost);
 router.route("/").get(function(req, res) {
     res.json({ message: "capital one rest api" });   
 });
