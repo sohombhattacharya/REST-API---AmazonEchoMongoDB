@@ -1,16 +1,17 @@
 var mongoose = require("mongoose"); 
-var Schema = mongoose.Schema; 
+var Schema = mongoose.Schema;
+var addressSchema = new Schema({
+    street_number: {type: String, required: true},
+    street_name: {type: String, required: true},
+    city: {type: String, required: true},
+    state: {type: String, required: true},
+    zip: {type: String, required: true}
+}, { versionKey: false, _id : false }); 
 var customerSchema = new Schema({
-    _id: String,
-    first_name: String,
-    last_name: String,
-    address: {
-        street_number: String,
-        street_name: String,
-        city: String,
-        state: String,
-        zip: String
-    },
-    friends: [{id: String, first_name: String, last_name: String}]
+    _id: {type: String, required: true},
+    first_name: {type: String, required: true},
+    last_name: {type: String, required: true},
+    address: {type: addressSchema, required: true},
+    friends: {type: [String], default: []}
 }, { versionKey: false});
 module.exports = mongoose.model('customer', customerSchema);
