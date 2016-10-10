@@ -6,27 +6,27 @@ var config = require("config");
 var customer = require("./routes/customer"); 
 var port = process.env.PORT || 8080;        
 var router = express.Router();              
-var db; 
 var Schema = mongoose.Schema; 
 var ObjectID = mongoose.Schema.Types.ObjectId;
+var db;
 mongoose.Promise = global.Promise;
-var mongodb_uri = "mongodb://test:test123@ds053136.mlab.com:53136/psu-capitalone"; // NEED TO USE HEROKU CONFIG FILES FOR USER/PASS
-mongoose.connect(mongodb_uri, function(err, database){
+mongoose.connect(config.DBHost, function(err, database){
     if (err){
         console.log(err);
+        console.log("error"); 
         process.exit(1);
     }
     db = database; 
     console.log("Database connection successful"); 
-    
     var server = app.listen(port, function(){
+        console.log("app init"); 
         app.use('/api', router);    
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());        
         console.log("App is up"); 
     });
 });
-
+console.log(config.DBHost);
 router.route("/").get(function(req, res) {
     res.json({ message: "capital one rest api" });   
 });
@@ -70,4 +70,4 @@ router.route("/customers/:id/friends/:friendID/firstName/:newFirstName/lastName/
 router.route("/customers/:id/friends/:friendID")
     .delete(customer.deleteFriend); 
 
-module.exports = app; 
+module.exports = router; 
