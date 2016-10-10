@@ -3,290 +3,138 @@ var Customer = require("../model/customer");
 
 function getCustomers(req, res){
     Customer.find({}, function(err, customers){
-        if (err){
-            var response = { error: "could not get all customers"};
-            res.json(response);
-        }
+        var response; 
+        if (err)
+            response = { error: "could not get all customers"};
         else    
-            res.json(customers);
+            response = customers;
+        res.json(response);
     });     
 }
 
 function postCustomer(req, res){
-    var response; 
     var newCustomer = new Customer(req.body);
     newCustomer.save(function(err){
-        if (err){
+        var response; 
+        if (err)
             response = { error: "could not add new customer"};
-            res.json(response); 
-        }
-        else{
+        else
             response = { success: "added customer"};    
-            res.json(response); 
-        }
+        res.json(response); 
     });
 }
 
 function getCustomer(req, res){
     Customer.find({_id: req.params.id}, function(err, customer){ 
-                if (err){
-                    var response = { error: "could not get customer"};
-                    res.json(response);
-                }
-                else
-                    res.json(customer[0]);
-            }); 
+        var response; 
+        if (err)
+            response = { error: "could not get customer"};
+        else{
+            if (customer.length == 0)
+                response = { error: "customer does not exist"}; 
+            else
+                response = customer[0]; 
+        }
+        res.json(response); 
+    }); 
 }
 
 function deleteCustomer(req, res){
     Customer.findOneAndRemove({_id: req.params.id}, function(err) {
-      if (err){
-            var response = { error: "could not find and delete customer"};
-            res.json(response);
-        }
+        var response; 
+        if (err)
+            response = { error: "could not find and delete customer"};
         else{
-            response = { success: "found and deleted customer"};    
-            res.json(response); 
+            Customer.update({}, {$pull: {"friends": req.params.id}}, {multi: true}, function(err){
+                if (err)
+                    response = { error: "could not find and delete current customer as friends of others"};
+                else
+                    response = { success: "found and deleted customer"};     
+            }); 
         }
+        res.json(response);
     }); 
 }
-
-//function updateCustomerFirstName(req, res){
-//    var newEdit = { first_name: req.params.new }
-//    Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
-//        if (err){
-//            var response = { error: "could not edit first name"};
-//            res.json(response); 
-//        }
-//        else{
-//            response = { success: "edited first name"};    
-//            res.json(response); 
-//        }
-//    });  
-//}
-//function updateCustomerLastName(req, res){
-//        var newEdit = { last_name: req.params.new }
-//        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
-//            if (err){
-//                var response = { error: "could not edit last name"};
-//                res.json(response); 
-//            }
-//            else{
-//                response = { success: "edited last name"};    
-//                res.json(response); 
-//            }
-//        });  
-//}
-//function updateCustomerAddressStreetNumber(req, res){
-//        var newEdit = { "address.street_number": req.params.new }
-//        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
-//            if (err){
-//                var response = { error: "could not edit street number"};
-//                res.json(response); 
-//            }
-//            else{
-//                response = { success: "edited street number"};    
-//                res.json(response); 
-//            }
-//        }); 
-//}
-//function updateCustomerAddressStreetName(req, res){
-//        var newEdit = { "address.street_name": req.params.new }
-//        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
-//            if (err){
-//                var response = { error: "could not edit street name"};
-//                res.json(response); 
-//            }
-//            else{
-//                response = { success: "edited street name"};    
-//                res.json(response); 
-//            }
-//        }); 
-//}
-//function updateCustomerAddressCity(req, res){
-//        var newEdit = { "address.city": req.params.new }
-//        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
-//            if (err){
-//                var response = { error: "could not edit city"};
-//                res.json(response); 
-//            }
-//            else{
-//                response = { success: "edited city"};    
-//                res.json(response); 
-//            }
-//        });  
-//}
-//
-//function updateCustomerAddressState(req, res){
-//        var newEdit = { "address.state": req.params.new }
-//        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
-//            if (err){
-//                var response = { error: "could not edit state"};
-//                res.json(response); 
-//            }
-//            else{
-//                response = { success: "edited state"};    
-//                res.json(response); 
-//            }
-//        });  
-//}
-//
-//function updateCustomerAddressZip(req, res){
-//        var newEdit = { "address.zip": req.params.new }
-//        Customer.findOneAndUpdate({_id: req.params.id}, newEdit, function(err, user) {
-//            if (err){
-//                var response = { error: "could not edit zip"};
-//                res.json(response); 
-//            }
-//            else{
-//                response = { success: "edited zip"};    
-//                res.json(response); 
-//            }
-//        }); 
-//}
 
 function updateCustomer(req, res){ 
         var response; 
         Customer.find({_id: req.params.id}, function(err, customer){
-            if (err){
+            if (err)
                 response = { error: "could not find customer"};
-                res.json(response);
-            }
             else{
-                var updatedCustomer = Object.assign(customer[0], req.body); 
-                console.log(updatedCustomer); 
-                updatedCustomer.save(function(err, customer){
-                    if (err){
-                        response = { error: "could not update customer"};
-                        res.json(response);                    
-                    }
-                    else{
-                        response = { success: "updated customer"};
-                        res.json(response); 
-                    }
-                }); 
-            
+                if (customer.length == 0)
+                    response = { error: "customer does not exist"}; 
+                else{
+                    var updatedCustomer = Object.assign(customer[0], req.body); 
+                    updatedCustomer.save(function(err, customer){
+                        if (err)
+                            response = { error: "could not update customer"};
+                        else
+                            response = { success: "updated customer"};
+                    }); 
+                }
             }
+            res.json(response);
         }); 
 }
 
 function getFriends(req, res){
         Customer.find({_id: req.params.id}, function(err, customer){
-            if (err){
-                var response = { error: "could not get friends"};
-                res.json(response);
+            var response; 
+            if (err)
+                response = { error: "could not get friends"};
+            else{
+                if (customer.length == 0){
+                    response = { error: "customer does not exist"}; 
+                }
+                else
+                    response = customer[0].friends;
             }
-            else
-                res.json(customer[0].friends);
+            res.json(response);
         }); 
 }
 
 function postFriend(req, res){
         Customer.find({_id: req.params.id}, function(err, customer){
             var response; 
-            if (err){
+            if (err)
                 response = { error: "could not get customer"};
-                res.json(response);
-            }
             else{
-                var i; 
-                var bool = 0; 
-                for (i=0; i < customer[0].friends.length; i++){
-                    if (customer[0].friends[i].id == req.params.friendID)
-                        bool = 1; 
-                }
-                
-                if (bool == 1){
-                    response = { error: "friend already exists!"};
-                    res.json(response);
-                }
+                if (customer.length == 0)
+                    response = { error: "customer does not exist"}; 
                 else{
-                    customer[0].friends.push(req.params.friendID); 
-                    customer[0].save(function(err){
-                        response = { success: "added friend"};
-                        if (err){
-                            response = { error: "could not add friends"};
-                            res.json(response);
-                        }
-                        else
-                            res.json(response);
-                    });
+                    var i; 
+                    var bool = 0; 
+                    for (i=0; i < customer[0].friends.length; i++){
+                        if (customer[0].friends[i].id == req.params.friendID)
+                            bool = 1; 
+                    }
+                    if (bool == 1)
+                        response = { error: "friend already exists!"};
+                    else{
+                        customer[0].friends.push(req.params.friendID); 
+                        customer[0].save(function(err){
+                            if (err)
+                                response = { error: "could not add friends"};
+                            else
+                                response = { success: "added friend"};
+                        });
+                    }
                 }
             }
+            res.json(response);
         });
 }
-//function updateFriendFirstNameAndLastName(req, res){
-//        Customer.find({_id: req.params.id}, function(err, customer){
-//            var response; 
-//            if (err){
-//                response = { error: "could not get customer"};
-//                res.json(response);
-//            }
-//            else{
-//                var i; 
-//                var index = -1; 
-//                for(i = 0; i < customer[0].friends.length; i++)
-//                    if (customer[0].friends[i].id == req.params.friendID){
-//                        index = i; 
-//                        break;
-//                    }
-//                if(index != -1){ 
-//                    customer[0].friends[index].first_name = req.params.newFirstName;  
-//                    customer[0].friends[index].last_name = req.params.newLastName;
-//                    customer[0].save(function(err){
-//                        response = { success: "updated friend"};
-//                        if (err){
-//                            response = { error: "could not update friend"};
-//                            res.json(response);
-//                        }
-//                        else
-//                            res.json(response);
-//                    });
-//                }
-//                else{
-//                    response = { success: "input friend not a friend of the given customer"};
-//                    res.json(response);
-//                }
-//            }
-//        }); 
-//}
+
 function deleteFriend(req, res){
-        Customer.find({_id: req.params.id}, function(err, customer){
-            var response; 
-            if (err){
-                response = { error: "could not get customer"};
-                res.json(response);
-            }
-            else{
-                var i; 
-                var index = -1; 
-                var bool = 0; 
-                for(i = 0; i < customer[0].friends.length; i++)
-                    if (customer[0].friends[i].id == req.params.friendID)
-                        index = i; 
-                
-                if(index != -1){ 
-                    customer[0].friends.splice(index, 1); 
-                    customer[0].save(function(err){
-                        response = { success: "deleted friend"};
-                        if (err){
-                            response = { error: "could not delete friend"};
-                            res.json(response);
-                        }
-                        else
-                            res.json(response);
-                    });
-                }
-                else{
-                    response = { success: "specified friend not a friend of the given customer"};
-                    res.json(response);
-                }
-            }
-        }); 
+            Customer.update({_id: req.params.id}, {$pull: {"friends": req.params.friendID}}, function(err){
+                var response; 
+                if (err)
+                    response = { error: "could not remove friend"};
+                else
+                    response = { success: "removed friend"}; 
+                res.json(response); 
+            });     
 }
 
-module.exports = {getCustomers, postCustomer, getCustomer, 
-//                  updateCustomerFirstName, updateCustomerLastName, updateCustomerAddressStreetNumber, 
-//                 updateCustomerAddressStreetName, updateCustomerAddressCity, updateCustomerAddressState, updateCustomerAddressZip, 
-                  getFriends,
-                 postFriend, deleteFriend, deleteCustomer, updateCustomer};
+module.exports = {getCustomers, postCustomer, getCustomer, getFriends, postFriend, deleteFriend, deleteCustomer, updateCustomer};

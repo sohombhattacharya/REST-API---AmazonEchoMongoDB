@@ -39,31 +39,8 @@ router.route("/customers/:id")
     .put(customer.updateCustomer)
     .delete(customer.deleteCustomer);
 
-//router.route("/customers/:id/firstName/:new")
-//    .put(customer.updateCustomerFirstName);
-//      
-//router.route("/customers/:id/lastName/:new")
-//    .put(customer.updateCustomerLastName); 
-//
-//router.route("/customers/:id/address/streetNumber/:new")
-//    .put(customer.updateCustomerAddressStreetNumber); 
-//
-//router.route("/customers/:id/address/streetName/:new")
-//    .put(customer.updateCustomerAddressStreetName); 
-//
-//router.route("/customers/:id/address/city/:new")
-//    .put(customer.updateCustomerAddressCity); 
-//
-//router.route("/customers/:id/address/state/:new")
-//    .put(customer.updateCustomerAddressState); 
-//
-//router.route("/customers/:id/address/zip/:new")
-//    .put(customer.updateCustomerAddressZip); 
-
 router.route("/customers/:id/friends")
     .get(customer.getFriends);
-//router.route("/customers/:id/friends/:friendID/firstName/:newFirstName/lastName/:newLastName")
-//    .put(customer.updateFriendFirstNameAndLastName); 
 
 router.route("/customers/:id/friends/:friendID")
     .post(customer.postFriend) 
