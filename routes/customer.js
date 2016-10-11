@@ -6,11 +6,11 @@ function getCustomers(req, res){
         var response; 
         if (err){
             response = { error: "could not get all customers"};
-            res.json(response);
+            return res.json(response);
         }
         else{    
             response = customers;
-            res.json(response);
+            return res.json(response);
         }
     });     
 }
