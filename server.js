@@ -11,15 +11,12 @@ var ObjectID = mongoose.Schema.Types.ObjectId;
 var db;
 mongoose.Promise = global.Promise;
 mongoose.connect(config.DBHost, function(err, database){
-    if (err){
-        console.log(err);
-        console.log("error"); 
+    if (err)
         process.exit(1);
-    }
     db = database; 
-    console.log("Database connection successful"); 
+    console.log("Database connection successful");
+    console.log(config.DBHost); 
     var server = app.listen(port, function(){
-        console.log("app init"); 
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());         
         app.use('/api', router);           
