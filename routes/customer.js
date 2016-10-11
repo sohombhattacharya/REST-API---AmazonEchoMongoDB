@@ -134,29 +134,46 @@ function postFriend(req, res){
                     res.json(response);
                 }
                 else{
-                    var i; 
-                    var bool = 0; 
-                    for (i=0; i < customer[0].friends.length; i++){
-                        if (customer[0].friends[i].id == req.params.friendID)
-                            bool = 1; 
-                    }
-                    if (bool == 1){
-                        response = { error: "friend already exists!"};
-                        res.json(response);
-                    }
-                    else{
-                        customer[0].friends.push(req.params.friendID);
-                        customer[0].save(function(err){
-                            if (err){
-                                response = { error: "could not add friends"};
-                                res.json(response);
+                    
+                    Customer.find({_id: req.params.friendID}, function(err, friend){
+                        if (err){
+                            response = {error: "error when trying to verify friend-to-add is a customer"}; 
+                            res.json(response); 
+                        }
+                        else{
+                            if (friend.length == 0){
+                                response = {error: "friend to add does not exist as a customer"}; 
+                                res.json(response); 
                             }
                             else{
-                                response = { success: "added friend"};
-                                res.json(response);
-                            }
-                        });
-                    }
+                                var i; 
+                                var bool = 0; 
+                                for (i=0; i < customer[0].friends.length; i++){
+                                    if (customer[0].friends[i].id == req.params.friendID)
+                                        bool = 1; 
+                                }
+                                if (bool == 1){
+                                    response = { error: "friend already exists!"};
+                                    res.json(response);
+                                }
+                                else{
+                                    customer[0].friends.push(req.params.friendID);
+                                    customer[0].save(function(err){
+                                        if (err){
+                                            response = { error: "could not add friends"};
+                                            res.json(response);
+                                        }
+                                        else{
+                                            response = { success: "added friend"};
+                                            res.json(response);
+                                        }
+                                    });
+                                }                             
+                            
+                            }                       
+                        }
+                    
+                    });
                 }
             }
         });
