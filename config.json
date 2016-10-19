@@ -1,0 +1,5 @@
+{
+    "prodDB": "mongodb://test:test123@ds053136.mlab.com:53136/psu-capitalone",
+    "testDB": "mongodb://test:test123@ds053176.mlab.com:53176/test_psucapitalone",
+    "testPort": 8080
+}

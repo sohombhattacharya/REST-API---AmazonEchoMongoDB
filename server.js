@@ -4,7 +4,13 @@ var bodyParser = require('body-parser');
 var mongoose = require("mongoose");
 var config = require("config"); 
 var customer = require("./routes/customer"); 
-var port = process.env.PORT || 8080;        
+var port;        
+if (process.env.NODE_ENV == "test"){
+    port = 8080; 
+    console.log("set port to 8080"); 
+}
+else
+    port = process.env.PORT; 
 var router = express.Router();              
 var Schema = mongoose.Schema; 
 var ObjectID = mongoose.Schema.Types.ObjectId;
@@ -21,6 +27,7 @@ mongoose.connect(config.DBHost, function(err, database){
         app.use(bodyParser.json());         
         app.use('/api', router);           
         console.log("App is up"); 
+        console.log(process.env.NODE_ENV);
     });
 });
 router.route("/").get(function(req, res) {
