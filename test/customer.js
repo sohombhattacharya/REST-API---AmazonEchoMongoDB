@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 var customer = require("../model/customer");
 var server = require("../server"); 
 var request = require('request-promise');
+var tests = require("./tests"); 
 
 const options = {  
   method: 'GET',
@@ -16,3 +17,8 @@ request(options)
   .catch(function (err) {
     // Something bad happened, handle the error
   })
+tests.Initialize; 
+tests.CustomerCollectionShouldBeEmpty; 
+tests.AddingCorrectCustomerShouldBeSuccess; 
+tests.AddingIncorrectCustomerShouldBeError; 
+tests.
