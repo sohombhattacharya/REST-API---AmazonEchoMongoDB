@@ -51,9 +51,9 @@ function getCustomer(req, res){
 }
 
 function deleteCustomer(req, res){
-    Customer.findOneAndRemove({_id: req.params.id}, function(err) {
+    Customer.findOneAndRemove({_id: req.params.id}, function(err, doc, result) {
         var response; 
-        if (err){
+        if (err || doc == null){
             response = { error: "could not find and delete customer"};
             res.json(response);
         }
@@ -180,15 +180,30 @@ function postFriend(req, res){
 }
 
 function deleteFriend(req, res){
-            Customer.update({_id: req.params.id}, {$pull: {"friends": req.params.friendID}}, function(err, customer){
+            Customer.update({_id: req.params.id}, {$pull: {"friends": req.params.friendID}}, function(err, raw){
                 var response; 
-                if (err){
+                if (err || raw.nModified == 0){
                     response = { error: "could not remove friend"};
                     res.json(response);
                 }
                 else{
-                    response = { success: "removed friend", body: customer}; 
-                    res.json(response);
+                    Customer.find({_id: req.params.id}, function(err1, customer){ 
+                        var response; 
+                        if (err1){
+                            response = { error: "could not get updated customer"};
+                            res.json(response);
+                        }
+                        else{
+                            if (customer.length == 0){
+                                response = { error: "updated customer does not exist"};
+                                res.json(response);
+                            }
+                            else{
+                                response = { success: "removed friend", body: customer[0]}; 
+                                res.json(response);
+                            }
+                        }
+                    });                     
                 }
             });     
 }

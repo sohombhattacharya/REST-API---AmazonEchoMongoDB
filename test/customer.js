@@ -188,8 +188,8 @@ describe('Customers', () => {
                     expect(response.statusCode).to.equal(200);
                     var resBody = JSON.parse(body);
                     expect(resBody).to.be.a("array");  
+                    done(); 
                 }
-                done(); 
             });
         });        
         it('it should NOT GET a specific Customer that does not exist', (done) => {
@@ -199,8 +199,8 @@ describe('Customers', () => {
                     expect(response.statusCode).to.equal(200);
                     var resBody = JSON.parse(body);
                     expect(resBody).to.have.property("error"); 
+                    done(); 
                 }
-                done(); 
             });
         }); 
         it('it should NOT GET friends of a specific Customer that does not exist', (done) => {
@@ -210,8 +210,8 @@ describe('Customers', () => {
                     expect(response.statusCode).to.equal(200);
                     var resBody = JSON.parse(body);
                     expect(resBody).to.have.property("error"); 
+                    done(); 
                 }
-                done(); 
             });
         });         
     }); 
@@ -246,8 +246,8 @@ describe('Customers', () => {
                 else{
                     expect(response.statusCode).to.equal(200);
                     expect(body).to.have.property("error"); 
+                    done(); 
                 }
-                done(); 
             });
         }); 
         it('it should NOT UPDATE a Customer with incorrectly formatted customer', (done) => {
@@ -271,9 +271,8 @@ describe('Customers', () => {
     describe("/DELETE Customers", () => {
         it('it should DELETE a Customer', (done) => {
             var options = {
-                url: constants.DELETE_CUSTOMER_URL, //URL to hit
+                url: constants.DELETE_CUSTOMER_URL,
                 method: 'DELETE',
-                //Lets post the following key/values as form
                 json: true
             }            
             request(options, function(error, response, body) {
@@ -286,12 +285,66 @@ describe('Customers', () => {
                         if (err) throw err; 
                         else{
                             expect(customer.length).to.equal(0); 
-                            done(); 
+                            Customer.find({}, function(err, customers){
+                                var response; 
+                                if (err) throw err; 
+                                else{    
+                                    var i; 
+                                    for (i = 0; i < customers.length; i++)
+                                        expect(customers[i].friends).to.not.have.members([constants.DUMMY_CORRECT_CUSTOMER_TO_DELETE._id]); 
+                                    done(); 
+                                }
+                            });                               
                         }
                     });                     
                 }
             });
-        });        
-    
+        });
+        it('it should NOT DELETE a Customer that does not exist', (done) => {
+            var options = {
+                url: constants.INCORRECT_SPEC_CUSTOMER_URL,
+                method: 'DELETE',
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error"); 
+                }
+                done(); 
+            });
+        }); 
+        it('it should DELETE a friend of a Customer', (done) => {
+            var options = {
+                url: constants.DELETE_CUSTOMER_FRIEND_URL,
+                method: 'DELETE',
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body.body.friends).to.not.have.members([constants.DUMMY_CUSTOMER_WITH_FRIENDS._id]); 
+                    expect(body).to.have.property("success"); 
+                }
+                done(); 
+            });
+        });  
+        it('it should NOT DELETE a friend of a Customer if it is not a friend', (done) => {
+            var options = {
+                url: constants.INCORRECT_CUSTOMER_SPEC_FRIEND_URL,
+                method: 'DELETE',
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error"); 
+                }
+                done(); 
+            });
+        });         
     }); 
 });
