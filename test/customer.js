@@ -281,8 +281,15 @@ describe('Customers', () => {
                 else{
                     expect(response.statusCode).to.equal(200);
                     expect(body).to.have.property("success"); 
+                    Customer.find({_id: constants.DUMMY_CORRECT_CUSTOMER_TO_DELETE._id}, function(err, customer){ 
+                        var response; 
+                        if (err) throw err; 
+                        else{
+                            expect(customer.length).to.equal(0); 
+                            done(); 
+                        }
+                    });                     
                 }
-                done(); 
             });
         });        
     
