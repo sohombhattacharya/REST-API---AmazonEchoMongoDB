@@ -8,10 +8,9 @@ var addressSchema = new Schema({
     zip: {type: String, required: true}
 }, { versionKey: false, _id : false }); 
 var customerSchema = new Schema({
-    _id: {type: String, required: true},
     first_name: {type: String, required: true},
     last_name: {type: String, required: true},
     address: {type: addressSchema, required: true},
     friends: {type: [String], default: []}
 }, { versionKey: false});
-module.exports = mongoose.model('customer', customerSchema);
+module.exports = mongoose.model('customers', customerSchema);
