@@ -17,14 +17,14 @@ function getCustomers(req, res){
 
 function postCustomer(req, res){
     var newCustomer = new Customer(req.body);
-    newCustomer.save(function(err){
+    newCustomer.save(function(err, customer){
         var response; 
         if (err){
             response = { error: "could not add new customer"};
             res.json(response);
         }
         else{
-            response = { success: "added customer"};    
+            response = { success: "added customer", body: customer};    
             res.json(response);
         }
     });
@@ -86,13 +86,13 @@ function updateCustomer(req, res){
                 }
                 else{
                     var updatedCustomer = Object.assign(customer[0], req.body); 
-                    updatedCustomer.save(function(err, customer){
+                    updatedCustomer.save(function(err, customer1){
                         if (err){
                             response = { error: "could not update customer"};
                             res.json(response);
                         }
                         else{
-                            response = { success: "updated customer"};
+                            response = { success: "updated customer", body: customer1};
                             res.json(response);
                         }
                     }); 
@@ -158,13 +158,13 @@ function postFriend(req, res){
                                 }
                                 else{
                                     customer[0].friends.push(req.params.friendID);
-                                    customer[0].save(function(err){
+                                    customer[0].save(function(err, updatedCustomer){
                                         if (err){
                                             response = { error: "could not add friends"};
                                             res.json(response);
                                         }
                                         else{
-                                            response = { success: "added friend"};
+                                            response = { success: "added friend", body: updatedCustomer};
                                             res.json(response);
                                         }
                                     });
@@ -180,14 +180,14 @@ function postFriend(req, res){
 }
 
 function deleteFriend(req, res){
-            Customer.update({_id: req.params.id}, {$pull: {"friends": req.params.friendID}}, function(err){
+            Customer.update({_id: req.params.id}, {$pull: {"friends": req.params.friendID}}, function(err, customer){
                 var response; 
                 if (err){
                     response = { error: "could not remove friend"};
                     res.json(response);
                 }
                 else{
-                    response = { success: "removed friend"}; 
+                    response = { success: "removed friend", body: customer}; 
                     res.json(response);
                 }
             });     

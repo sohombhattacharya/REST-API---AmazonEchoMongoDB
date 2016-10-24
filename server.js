@@ -7,7 +7,6 @@ var customer = require("./routes/customer");
 var port;        
 if (process.env.NODE_ENV == "test"){
     port = 8080; 
-    console.log("set port to 8080"); 
 }
 else
     port = process.env.PORT; 
@@ -20,14 +19,10 @@ mongoose.connect(config.DBHost, function(err, database){
     if (err)
         process.exit(1);
     db = database; 
-    console.log("Database connection successful");
-    console.log(config.DBHost); 
     var server = app.listen(port, function(){
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());         
         app.use('/api', router);           
-        console.log("App is up"); 
-        console.log(process.env.NODE_ENV);
     });
 });
 router.route("/").get(function(req, res) {
