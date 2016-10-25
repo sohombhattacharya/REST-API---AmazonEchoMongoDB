@@ -304,11 +304,11 @@ describe('Customers', () => {
                             expect(body1.body.last_name).to.equal(constants.DUMMY_CORRECT_CUSTOMER_UPDATE.last_name); 
                             expect(body1.body.address.zip).to.equal(constants.DUMMY_CORRECT_CUSTOMER_UPDATE.address.zip);
                             expect(body1.body.address.street_number).to.equal(constants.DUMMY_CORRECT_CUSTOMER_UPDATE.address.street_number);
+                            done(); 
                         }
                     });                   
                 }
             });   
-            done(); 
         });  
         it('it should NOT UPDATE a Customer with given _id that does not exist', (done) => {
             var options = {
@@ -449,8 +449,8 @@ describe('Customers', () => {
                 else{
                     expect(response.statusCode).to.equal(200);
                     expect(body).to.have.property("error"); 
+                    done(); 
                 }
-                done(); 
             });
         }); 
         it('it should DELETE a friend of a Customer', (done) => {
