@@ -1,4 +1,5 @@
 var CUSTOMERS_URL = 'http://localhost:8080/api/customers';
+var ACCOUNTS_URL = 'http://localhost:8080/api/accounts';
 var DUMMY_CORRECT_CUSTOMER = {
     "first_name": "Stacy",
     "last_name": "Rivera",
@@ -9,6 +10,14 @@ var DUMMY_CORRECT_CUSTOMER = {
         "state": "PA",
         "zip": "16802"
     }
+};
+var DUMMY_CORRECT_ACCOUNT = {
+      "type": "Credit Card",
+      "nickname": "string",
+      "rewards": 0,
+      "balance": 0,
+      "account_number": "string",
+      "customer_id": "111"
 };
 var DUMMY_CORRECT_CUSTOMER_1 = {
     "first_name": "Bob",
@@ -43,7 +52,9 @@ var DUMMY_CORRECT_CUSTOMER_UPDATE = {
 };
 module.exports = {
     CUSTOMERS_URL: CUSTOMERS_URL,
+    ACCOUNTS_URL: ACCOUNTS_URL,
     DUMMY_CORRECT_CUSTOMER: DUMMY_CORRECT_CUSTOMER,
+    DUMMY_CORRECT_ACCOUNT: DUMMY_CORRECT_ACCOUNT,
     DUMMY_CORRECT_CUSTOMER_UPDATE: DUMMY_CORRECT_CUSTOMER_UPDATE,
     DUMMY_CORRECT_CUSTOMER_1: DUMMY_CORRECT_CUSTOMER_1,
     DUMMY_INCORRECT_CUSTOMER: DUMMY_INCORRECT_CUSTOMER

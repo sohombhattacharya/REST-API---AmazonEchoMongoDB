@@ -1,6 +1,7 @@
 //HOW TO RUN: SET NODE_ENV=test then call node customer.js
 var mongoose = require("mongoose"); 
 var Customer = require("../model/customer");
+var Account = require("../model/account");
 var server = require("../server"); 
 var request = require('request');
 var expect  = require("chai").expect;
@@ -564,6 +565,52 @@ describe('Customers', () => {
                     });
                 }
             });             
+        });         
+    }); 
+});
+describe("Accounts", () => {
+    beforeEach((done) => {
+        Account.remove({}, (err) => { 
+            if (err) throw err;
+            else 
+                done(); 
+        });
+    }); 
+    describe("/GET Accounts", () => {
+        it('it should GET all the Accounts', (done) => {
+            request(constants.ACCOUNTS_URL, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    var resBody = JSON.parse(body); 
+                    expect(resBody.length).to.equal(0); 
+                    done(); 
+                }
+            });
+        }); 
+        it('it should GET Accounts for a specific Customer', (done) => {
+            var options = {
+                url: constants.ACCOUNTS_URL, 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(body).to.have.property("success");
+                    var specCustomerURL = constants.CUSTOMERS_URL + "/" + constants.DUMMY_CORRECT_ACCOUNT.customer_id + "/accounts";
+                    request(specCustomerURL, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            var resBody = JSON.parse(body1);
+                            expect(resBody.customer_id).to.equal(body.body.customer_id); 
+                            done(); 
+                        }
+                    });                    
+                }
+            }); 
         });         
     }); 
 });

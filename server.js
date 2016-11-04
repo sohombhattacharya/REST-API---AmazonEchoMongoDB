@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var mongoose = require("mongoose");
 var config = require("config"); 
 var customer = require("./routes/customer"); 
+var account = require("./routes/account"); 
 var port;        
 if (process.env.NODE_ENV == "test"){
     port = 8080; 
@@ -44,5 +45,12 @@ router.route("/customers/:id/friends")
 router.route("/customers/:id/friends/:friendID")
     .post(customer.postFriend) 
     .delete(customer.deleteFriend); 
+
+router.route("/customers/:id/accounts")
+    .get(account.getCustomerAccounts);
+
+router.route("/accounts")
+    .get(account.getAccounts)
+    .post(account.postAccount);
 
 module.exports = router; 
