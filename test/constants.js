@@ -17,7 +17,18 @@ var DUMMY_CORRECT_ACCOUNT = {
       "rewards": 0,
       "balance": 0,
       "account_number": "string",
-      "customer_id": "111"
+};
+var DUMMY_INCORRECT_ACCOUNT = {
+      "type": "Credit Card",
+      "nickname": "string",
+      "account_number": "string",
+};
+var DUMMY_CORRECT_ACCOUNT_1 = {
+      "type": "Savings",
+      "nickname": "string",
+      "rewards": 0,
+      "balance": 0,
+      "account_number": "string",
 };
 var DUMMY_CORRECT_CUSTOMER_1 = {
     "first_name": "Bob",
@@ -55,6 +66,7 @@ module.exports = {
     ACCOUNTS_URL: ACCOUNTS_URL,
     DUMMY_CORRECT_CUSTOMER: DUMMY_CORRECT_CUSTOMER,
     DUMMY_CORRECT_ACCOUNT: DUMMY_CORRECT_ACCOUNT,
+    DUMMY_CORRECT_ACCOUNT_1: DUMMY_CORRECT_ACCOUNT_1,
     DUMMY_CORRECT_CUSTOMER_UPDATE: DUMMY_CORRECT_CUSTOMER_UPDATE,
     DUMMY_CORRECT_CUSTOMER_1: DUMMY_CORRECT_CUSTOMER_1,
     DUMMY_INCORRECT_CUSTOMER: DUMMY_INCORRECT_CUSTOMER

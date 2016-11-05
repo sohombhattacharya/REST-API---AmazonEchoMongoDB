@@ -576,6 +576,68 @@ describe("Accounts", () => {
                 done(); 
         });
     }); 
+    
+    describe("/POST Accounts", () => {
+        it("it should POST an account to a Customer if he/she does not already have an account", (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/accounts", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("success");
+                    done(); 
+                }
+            });             
+        });
+        it("it should NOT POST an account to a Customer if he/she already has an account", (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/accounts", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + "111" + "/accounts", 
+                        method: 'POST',
+                        body: constants.DUMMY_CORRECT_ACCOUNT_1,
+                        json: true
+                    }            
+                    request(options, function(error, response, body) {
+                        if (error) throw error;  
+                        else{
+                            expect(response.statusCode).to.equal(200);
+                            expect(body).to.have.property("error");
+                            done(); 
+                        }
+                    });  
+                }
+            });        
+        }); 
+        it("it should NOT POST an incorrectly formatted account to a Customer", (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/accounts", 
+                method: 'POST',
+                body: constants.DUMMY_INCORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error");
+                    done(); 
+                }
+            });             
+        });        
+    });
     describe("/GET Accounts", () => {
         it('it should GET all the Accounts', (done) => {
             request(constants.ACCOUNTS_URL, function(error, response, body) {
@@ -589,8 +651,9 @@ describe("Accounts", () => {
             });
         }); 
         it('it should GET Accounts for a specific Customer', (done) => {
+            var specCustomerURL = constants.CUSTOMERS_URL + "/" + constants.DUMMY_CORRECT_ACCOUNT.customer_id + "/accounts";
             var options = {
-                url: constants.ACCOUNTS_URL, 
+                url: specCustomerURL, 
                 method: 'POST',
                 body: constants.DUMMY_CORRECT_ACCOUNT,
                 json: true
@@ -599,7 +662,6 @@ describe("Accounts", () => {
                 if (error) throw error;  
                 else{
                     expect(body).to.have.property("success");
-                    var specCustomerURL = constants.CUSTOMERS_URL + "/" + constants.DUMMY_CORRECT_ACCOUNT.customer_id + "/accounts";
                     request(specCustomerURL, function(error1, response1, body1) {
                         if (error1) throw error1;  
                         else{

@@ -15,18 +15,34 @@ function getAccounts(req, res){
     });     
 }
 function postAccount(req, res){
-    var newAccount = new Account(req.body);
-    newAccount.save(function(err, account){
+    Account.find({customer_id: req.params.id}, function(err, account){ 
         var response; 
         if (err){
-            response = { error: "could not add new account"};
+            response = { error: "error when trying to get account"};
             res.json(response);
         }
         else{
-            response = { success: "added customer", body: account};    
-            res.json(response);
+            if (account.length != 0){
+                response = { error: "this customer already has an account!"};
+                res.json(response);
+            }
+            else{
+                var newAccount = new Account(req.body);
+                newAccount.customer_id = req.params.id;
+                newAccount.save(function(err1, account1){
+                    var response; 
+                    if (err1){
+                        response = { error: "could not add new account"};
+                        res.json(response);
+                    }
+                    else{
+                        response = { success: "added customer", body: account1};    
+                        res.json(response);
+                    }
+                });                
+            }
         }
-    });
+    });     
 }
 
 function getCustomerAccounts(req, res){

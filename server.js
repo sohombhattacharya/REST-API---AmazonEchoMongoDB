@@ -47,10 +47,10 @@ router.route("/customers/:id/friends/:friendID")
     .delete(customer.deleteFriend); 
 
 router.route("/customers/:id/accounts")
-    .get(account.getCustomerAccounts);
+    .get(account.getCustomerAccounts)
+    .post(account.postAccount);
 
 router.route("/accounts")
     .get(account.getAccounts)
-    .post(account.postAccount);
 
 module.exports = router; 
