@@ -23,7 +23,7 @@ mongoose.connect(config.DBHost, function(err, database){
     var server = app.listen(port, function(){
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());         
-        app.use('/api', router);           
+        app.use('/api', router); 
     });
 });
 router.route("/").get(function(req, res) {
@@ -46,11 +46,13 @@ router.route("/customers/:id/friends/:friendID")
     .post(customer.postFriend) 
     .delete(customer.deleteFriend); 
 
-router.route("/customers/:id/accounts")
+router.route("/customers/:id/account")
     .get(account.getCustomerAccounts)
-    .post(account.postAccount);
+    .post(account.postAccount)
+    .put(account.updateAccount)
+    .delete(account.deleteAccount);
 
 router.route("/accounts")
-    .get(account.getAccounts)
+    .get(account.getAccounts);
 
 module.exports = router; 

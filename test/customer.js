@@ -302,6 +302,7 @@ describe('Customers', () => {
                         if (error1) throw error1;  
                         else{
                             expect(response1.statusCode).to.equal(200);
+                            expect(body1).to.have.property("success");
                             expect(body1.body.last_name).to.equal(constants.DUMMY_CORRECT_CUSTOMER_UPDATE.last_name); 
                             expect(body1.body.address.zip).to.equal(constants.DUMMY_CORRECT_CUSTOMER_UPDATE.address.zip);
                             expect(body1.body.address.street_number).to.equal(constants.DUMMY_CORRECT_CUSTOMER_UPDATE.address.street_number);
@@ -580,7 +581,7 @@ describe("Accounts", () => {
     describe("/POST Accounts", () => {
         it("it should POST an account to a Customer if he/she does not already have an account", (done) => {
             var options = {
-                url: constants.CUSTOMERS_URL + "/" + "111" + "/accounts", 
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
                 method: 'POST',
                 body: constants.DUMMY_CORRECT_ACCOUNT,
                 json: true
@@ -596,7 +597,7 @@ describe("Accounts", () => {
         });
         it("it should NOT POST an account to a Customer if he/she already has an account", (done) => {
             var options = {
-                url: constants.CUSTOMERS_URL + "/" + "111" + "/accounts", 
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
                 method: 'POST',
                 body: constants.DUMMY_CORRECT_ACCOUNT,
                 json: true
@@ -605,7 +606,7 @@ describe("Accounts", () => {
                 if (error) throw error;  
                 else{
                     var options = {
-                        url: constants.CUSTOMERS_URL + "/" + "111" + "/accounts", 
+                        url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
                         method: 'POST',
                         body: constants.DUMMY_CORRECT_ACCOUNT_1,
                         json: true
@@ -623,7 +624,7 @@ describe("Accounts", () => {
         }); 
         it("it should NOT POST an incorrectly formatted account to a Customer", (done) => {
             var options = {
-                url: constants.CUSTOMERS_URL + "/" + "111" + "/accounts", 
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
                 method: 'POST',
                 body: constants.DUMMY_INCORRECT_ACCOUNT,
                 json: true
@@ -651,7 +652,7 @@ describe("Accounts", () => {
             });
         }); 
         it('it should GET Accounts for a specific Customer', (done) => {
-            var specCustomerURL = constants.CUSTOMERS_URL + "/" + constants.DUMMY_CORRECT_ACCOUNT.customer_id + "/accounts";
+            var specCustomerURL = constants.CUSTOMERS_URL + "/" + "111" + "/account";
             var options = {
                 url: specCustomerURL, 
                 method: 'POST',
@@ -673,6 +674,206 @@ describe("Accounts", () => {
                     });                    
                 }
             }); 
-        });         
+        });    
+        it("it should NOT GET Account for a specific Customer if the customer doesn't exist", (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(body).to.have.property("success");
+                    var specCustomerURL = constants.CUSTOMERS_URL + "/" + "222" + "/account";
+                    request(specCustomerURL, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            var resBody = JSON.parse(body1);
+                            expect(resBody).to.have.property("error"); 
+                            done(); 
+                        }
+                    });                    
+                }
+            }); 
+        });        
     }); 
+    describe("/PUT Accounts", () => {
+        it('it should UPDATE an account', (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                        method: 'PUT',
+                        body: constants.DUMMY_CORRECT_ACCOUNT_1,
+                        json: true
+                    }             
+                    request(options, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            expect(body1).to.have.property("success");
+                            expect(body1.body.type).to.equal(constants.DUMMY_CORRECT_ACCOUNT_1.type); 
+                            done(); 
+                        }
+                    });                   
+                }
+            });   
+        });
+        it('it should NOT UPDATE an account with incorrectly formatted account body', (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                        method: 'PUT',
+                        body: constants.DUMMY_INCORRECT_ACCOUNT,
+                        json: true
+                    }             
+                    request(options, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            expect(body1).to.have.property("error");  
+                            done(); 
+                        }
+                    });                   
+                }
+            });   
+        }); 
+        it('it should NOT UPDATE an account for a customer that does not exist', (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + "222" + "/account", 
+                        method: 'PUT',
+                        body: constants.DUMMY_CORRECT_ACCOUNT_1,
+                        json: true
+                    }             
+                    request(options, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            expect(body1).to.have.property("error");
+                            done(); 
+                        }
+                    });                   
+                }
+            });   
+        });        
+    });
+    describe("/DELETE Accounts", () => {
+        it('it should DELETE an Account', (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("success");
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + "111" + "/account",
+                        method: 'DELETE',
+                        json: true
+                    }            
+                    request(options, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            specCustomerURL = constants.CUSTOMERS_URL + "/" + "111" + "/account";
+                            request(specCustomerURL, function(error1, response1, body1) {
+                                if (error1) throw error1;  
+                                else{
+                                    expect(response1.statusCode).to.equal(200);
+                                    var resBody = JSON.parse(body1);
+                                    expect(resBody).to.have.property("error"); 
+                                    done(); 
+                                }
+                            });                             
+                        }
+                    });                    
+                }
+            });            
+        });
+        it("it should NOT DELETE an Account for a customer that doesn't have an account", (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL,
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_CUSTOMER,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("success"); 
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + body._id + "/account",
+                        method: 'DELETE',
+                        json: true
+                    }            
+                    request(options, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            expect(body1).to.have.property("error");
+                            done();
+                        }
+                    });
+                }
+            });          
+        });  
+        it('it should NOT DELETE an Account for a customer that does not exist', (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + "222" + "/account", 
+                        method: 'DELETE',
+                        json: true
+                    }             
+                    request(options, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            expect(body1).to.have.property("error");
+                            done(); 
+                        }
+                    });                   
+                }
+            });   
+        });         
+    });    
+    
 });

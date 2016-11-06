@@ -74,29 +74,38 @@ function deleteCustomer(req, res){
 
 function updateCustomer(req, res){ 
         var response; 
-        Customer.find({_id: req.params.id}, function(err, customer){
-            if (err){
-                response = { error: "could not find customer"};
+        var customerBody = new Customer(req.body);
+        customerBody.validate(function(error){
+            if (error){
+                response = { error: "incorrectly formatted customer"};
                 res.json(response);
             }
             else{
-                if (customer.length == 0){
-                    response = { error: "customer does not exist"}; 
-                    res.json(response);
-                }
-                else{
-                    var updatedCustomer = Object.assign(customer[0], req.body); 
-                    updatedCustomer.save(function(err, customer1){
-                        if (err){
-                            response = { error: "could not update customer"};
+                Customer.find({_id: req.params.id}, function(err, customer){
+                    if (err){
+                        response = { error: "could not find customer"};
+                        res.json(response);
+                    }
+                    else{
+                        if (customer.length == 0){
+                            response = { error: "customer does not exist"}; 
                             res.json(response);
                         }
                         else{
-                            response = { success: "updated customer", body: customer1};
-                            res.json(response);
+                            var updatedCustomer = Object.assign(customer[0], req.body); 
+                            updatedCustomer.save(function(err, customer1){
+                                if (err){
+                                    response = { error: "could not update customer"};
+                                    res.json(response);
+                                }
+                                else{
+                                    response = { success: "updated customer", body: customer1};
+                                    res.json(response);
+                                }
+                            }); 
                         }
-                    }); 
-                }
+                    }
+                });            
             }
         }); 
 }
