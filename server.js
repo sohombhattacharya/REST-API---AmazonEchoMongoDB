@@ -5,6 +5,7 @@ var mongoose = require("mongoose");
 var config = require("config"); 
 var customer = require("./routes/customer"); 
 var account = require("./routes/account"); 
+var transfer = require("./routes/transfers"); 
 var port;        
 if (process.env.NODE_ENV == "test"){
     port = 8080; 
@@ -48,14 +49,25 @@ router.route("/customers/:id/friends/:friendID")
 
 router.route("/customers/:id/account")
     .get(account.getCustomerAccounts)
-    .post(account.postAccount)
-    .put(account.updateAccount);
+    .post(account.postAccount);
 
 router.route("/accounts")
     .get(account.getAccounts);
 
 router.route("/accounts/:id")
     .delete(account.deleteAccount)
-    .get(account.getAccount);
+    .get(account.getAccount)
+    .put(account.updateAccount);
+
+router.route("/accounts/:id/transfers")
+    .post(transfer.postTransfer);
+
+router.route("/transfers")
+    .get(transfer.getTransfers);
+
+router.route("/transfers/:id")
+    .delete(transfer.deleteTransfer)
+    .put(transfer.updateTransfer)
+    .get(transfer.getTransfer);
 
 module.exports = router; 

@@ -1,6 +1,6 @@
 var mongoose = require("mongoose"); 
 var Account = require("../model/account");
-
+var Customer = require("../model/customer");
 function getAccounts(req, res){
     Account.find({}, function(err, accounts){
         var response; 
@@ -36,58 +36,87 @@ function getAccount(req, res){
 }
 
 function postAccount(req, res){
-    Account.find({customer_id: req.params.id}, function(err, account){ 
+    Customer.find({_id: req.params.id}, function(err0, customer){ 
         var response; 
-        if (err){
-            response = { error: "error when trying to get account"};
+        if (err0){
+            response = { error: "could not find customer"};
             res.json(response);
         }
         else{
-            if (account.length != 0){
-                response = { error: "this customer already has an account!"};
+            if (customer.length == 0){
+                response = { error: "customer does not exist"};
                 res.json(response);
             }
             else{
-                var newAccount = new Account(req.body);
-                newAccount.customer_id = req.params.id;
-                newAccount.save(function(err1, account1){
+                Account.find({customer_id: req.params.id}, function(err, account){ 
                     var response; 
-                    if (err1){
-                        response = { error: "could not add new account"};
+                    if (err){
+                        response = { error: "error when trying to get account"};
                         res.json(response);
                     }
                     else{
-                        response = { success: "added customer", body: account1};    
-                        res.json(response);
+                        if (account.length != 0){
+                            response = { error: "this customer already has an account!"};
+                            res.json(response);
+                        }
+                        else{
+                            var newAccount = new Account(req.body);
+                            newAccount.customer_id = req.params.id;
+                            newAccount.save(function(err1, account1){
+                                var response; 
+                                if (err1){
+                                    response = { error: "could not add new account"};
+                                    res.json(response);
+                                }
+                                else{
+                                    response = { success: "added customer", body: account1};    
+                                    res.json(response);
+                                }
+                            });                
+                        }
                     }
-                });                
+                });
             }
         }
-    });     
+    });         
 }
 
 function getCustomerAccounts(req, res){
-    Account.find({customer_id: req.params.id}, function(err, account){ 
+    Customer.find({_id: req.params.id}, function(err, customer){ 
         var response; 
         if (err){
-            response = { error: "could not get account"};
+            response = { error: "could not find customer"};
             res.json(response);
         }
         else{
-            if (account.length == 0){
-                response = { error: "account does not exist"};
+            if (customer.length == 0){
+                response = { error: "customer does not exist"};
                 res.json(response);
             }
             else{
-                response = account[0]; 
-                res.json(response);
+                Account.find({customer_id: req.params.id}, function(err1, account){ 
+                    var response; 
+                    if (err1){
+                        response = { error: "could not get account"};
+                        res.json(response);
+                    }
+                    else{
+                        if (account.length == 0){
+                            response = { error: "account does not exist"};
+                            res.json(response);
+                        }
+                        else{
+                            response = account[0]; 
+                            res.json(response);
+                        }
+                    }
+                }); 
             }
         }
-    }); 
+    });    
 }
 function updateAccount(req, res){ 
         var response; 
-        req.body.customer_id = req.params.id;
         var accountBody = new Account(req.body);
         accountBody.validate(function(error){
             if (error){
@@ -95,7 +124,7 @@ function updateAccount(req, res){
                 res.json(response);
             }    
             else{
-                Account.find({customer_id: req.params.id}, function(err, account){
+                Account.find({_id: req.params.id}, function(err, account){
                     if (err){
                         response = { error: "could not find account"};
                         res.json(response);

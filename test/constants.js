@@ -1,5 +1,6 @@
 var CUSTOMERS_URL = 'http://localhost:8080/api/customers';
 var ACCOUNTS_URL = 'http://localhost:8080/api/accounts';
+var TRANSFERS_URL = "http://localhost:8080/api/transfers";
 var DUMMY_CORRECT_CUSTOMER = {
     "first_name": "Stacy",
     "last_name": "Rivera",
@@ -64,6 +65,7 @@ var DUMMY_CORRECT_CUSTOMER_UPDATE = {
 module.exports = {
     CUSTOMERS_URL: CUSTOMERS_URL,
     ACCOUNTS_URL: ACCOUNTS_URL,
+    TRANSFERS_URL: TRANSFERS_URL,
     DUMMY_CORRECT_CUSTOMER: DUMMY_CORRECT_CUSTOMER,
     DUMMY_CORRECT_ACCOUNT: DUMMY_CORRECT_ACCOUNT,
     DUMMY_CORRECT_ACCOUNT_1: DUMMY_CORRECT_ACCOUNT_1,

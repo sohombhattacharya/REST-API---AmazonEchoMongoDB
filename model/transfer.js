@@ -5,7 +5,6 @@ var transferSchema = new Schema({
         sender: {type: String, required: true},
         receiver: {type: String, required: true},
         amount: {type: Number, required: true},
-        timestamp: {type: Date, required: true},
         description: {type: String, required: true}
-}, {versionKey:false}); 
+}, {versionKey:false, timestamps: true}); 
 module.exports = mongoose.model('transfer', transferSchema);
