@@ -675,6 +675,59 @@ describe("Accounts", () => {
                 }
             }); 
         });    
+        it('it should GET Account for a specific account id', (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(body).to.have.property("success");
+                    var specAccountURL = constants.ACCOUNTS_URL + "/" + body.body._id;
+                    request(specAccountURL, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            var resBody = JSON.parse(body1);
+                            expect(resBody.type).to.equal(constants.DUMMY_CORRECT_ACCOUNT.type);
+                            expect(resBody.nickname).to.equal(constants.DUMMY_CORRECT_ACCOUNT.nickname);
+                            expect(resBody.rewards).to.equal(constants.DUMMY_CORRECT_ACCOUNT.rewards);
+                            expect(resBody.balance).to.equal(constants.DUMMY_CORRECT_ACCOUNT.balance);
+                            expect(resBody.account_number).to.equal(constants.DUMMY_CORRECT_ACCOUNT.account_number);
+                            expect(resBody._id).to.equal(body.body._id);
+                            done(); 
+                        }
+                    });                    
+                }
+            }); 
+        });      
+        it('it should NOT GET Account for a specific account id that does not exist', (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_ACCOUNT,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(body).to.have.property("success");
+                    var specAccountURL = constants.ACCOUNTS_URL + "/" + "00000";
+                    request(specAccountURL, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            var resBody = JSON.parse(body1);
+                            expect(resBody).to.have.property("error");
+                            done(); 
+                        }
+                    });                    
+                }
+            }); 
+        });               
         it("it should NOT GET Account for a specific Customer if the customer doesn't exist", (done) => {
             var options = {
                 url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
@@ -798,14 +851,14 @@ describe("Accounts", () => {
                     expect(response.statusCode).to.equal(200);
                     expect(body).to.have.property("success");
                     var options = {
-                        url: constants.CUSTOMERS_URL + "/" + "111" + "/account",
+                        url: constants.ACCOUNTS_URL + "/" + body._id,
                         method: 'DELETE',
                         json: true
                     }            
                     request(options, function(error1, response1, body1) {
                         if (error1) throw error1;  
                         else{
-                            specCustomerURL = constants.CUSTOMERS_URL + "/" + "111" + "/account";
+                            specCustomerURL = constants.ACCOUNTS_URL + "/" + body._id;
                             request(specCustomerURL, function(error1, response1, body1) {
                                 if (error1) throw error1;  
                                 else{
@@ -819,21 +872,21 @@ describe("Accounts", () => {
                     });                    
                 }
             });            
-        });
-        it("it should NOT DELETE an Account for a customer that doesn't have an account", (done) => {
+        });    
+        it('it should NOT DELETE an Account if it does not exist', (done) => {
             var options = {
-                url: constants.CUSTOMERS_URL,
+                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
                 method: 'POST',
-                body: constants.DUMMY_CORRECT_CUSTOMER,
+                body: constants.DUMMY_CORRECT_ACCOUNT,
                 json: true
             }            
             request(options, function(error, response, body) {
                 if (error) throw error;  
                 else{
                     expect(response.statusCode).to.equal(200);
-                    expect(body).to.have.property("success"); 
+                    expect(body).to.have.property("success");
                     var options = {
-                        url: constants.CUSTOMERS_URL + "/" + body._id + "/account",
+                        url: constants.ACCOUNTS_URL + "/" + "1111111",
                         method: 'DELETE',
                         json: true
                     }            
@@ -844,36 +897,10 @@ describe("Accounts", () => {
                             expect(body1).to.have.property("error");
                             done();
                         }
-                    });
+                    });                    
                 }
-            });          
-        });  
-        it('it should NOT DELETE an Account for a customer that does not exist', (done) => {
-            var options = {
-                url: constants.CUSTOMERS_URL + "/" + "111" + "/account", 
-                method: 'POST',
-                body: constants.DUMMY_CORRECT_ACCOUNT,
-                json: true
-            }            
-            request(options, function(error, response, body) {
-                if (error) throw error;  
-                else{
-                    var options = {
-                        url: constants.CUSTOMERS_URL + "/" + "222" + "/account", 
-                        method: 'DELETE',
-                        json: true
-                    }             
-                    request(options, function(error1, response1, body1) {
-                        if (error1) throw error1;  
-                        else{
-                            expect(response1.statusCode).to.equal(200);
-                            expect(body1).to.have.property("error");
-                            done(); 
-                        }
-                    });                   
-                }
-            });   
-        });         
+            });            
+        });        
     });    
     
 });

@@ -14,6 +14,27 @@ function getAccounts(req, res){
         }
     });     
 }
+
+function getAccount(req, res){
+    Account.find({_id: req.params.id}, function(err, account){ 
+        var response; 
+        if (err){
+            response = { error: "could not get account"};
+            res.json(response);
+        }
+        else{
+            if (account.length == 0){
+                response = { error: "account does not exist"};
+                res.json(response);
+            }
+            else{
+                response = account[0]; 
+                res.json(response);
+            }
+        }
+    }); 
+}
+
 function postAccount(req, res){
     Account.find({customer_id: req.params.id}, function(err, account){ 
         var response; 
@@ -103,7 +124,7 @@ function updateAccount(req, res){
         });
 }
 function deleteAccount(req, res){
-    Account.findOneAndRemove({customer_id: req.params.id}, function(err, account, result) {
+    Account.findOneAndRemove({_id: req.params.id}, function(err, account, result) {
         var response; 
         if (err || account == null){
             response = { error: "could not find and delete account"};
@@ -114,6 +135,6 @@ function deleteAccount(req, res){
             res.json(response);
         }
     }); 
-}
+} 
 
-module.exports = {getAccounts, getCustomerAccounts, postAccount, updateAccount, deleteAccount};
+module.exports = {getAccounts, getAccount, getCustomerAccounts, postAccount, updateAccount, deleteAccount};

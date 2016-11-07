@@ -49,10 +49,13 @@ router.route("/customers/:id/friends/:friendID")
 router.route("/customers/:id/account")
     .get(account.getCustomerAccounts)
     .post(account.postAccount)
-    .put(account.updateAccount)
-    .delete(account.deleteAccount);
+    .put(account.updateAccount);
 
 router.route("/accounts")
     .get(account.getAccounts);
+
+router.route("/accounts/:id")
+    .delete(account.deleteAccount)
+    .get(account.getAccount);
 
 module.exports = router; 
