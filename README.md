@@ -216,4 +216,67 @@ need to specify account id
   "success": "found and deleted account"
 }
 
+## GET /api/accounts/{id}/transfers
+### Request
+need to specify account id
+### Response
+list of transfers
 
+## GET /api/transfers
+### Response
+list of transfers
+
+## POST /api/accounts/{id}/transfers
+### Request
+{
+  "type": "p2p",
+  "receiver": "5821251f674bad00030a53fc",
+  "amount": 3.54,
+  "description": "uber"
+}
+### Response
+{
+  "success": "completed transfer",
+  "body": {
+    "updatedAt": "2016-11-08T05:45:15.639Z",
+    "createdAt": "2016-11-08T05:45:15.639Z",
+    "type": "p2p",
+    "receiver": "5821251f674bad00030a53fc",
+    "amount": 3.54,
+    "description": "uber",
+    "sender": "5821240e17d9f90003c29f82",
+    "_id": "5821666b42ebe500030726af"
+  }
+}
+
+## PUT /api/transfers/{id}
+### Request
+{
+    "type": "p2p",
+    "receiver": "5821251f674bad00030a53fc",
+    "amount": 3.54,
+    "description": "lyft",
+    "sender": "5821240e17d9f90003c29f82"
+}
+### Response
+{
+  "success": "updated transfer",
+  "body": {
+    "_id": "5821666b42ebe500030726af",
+    "updatedAt": "2016-11-08T05:50:07.976Z",
+    "createdAt": "2016-11-08T05:45:15.639Z",
+    "type": "p2p",
+    "receiver": "5821251f674bad00030a53fc",
+    "amount": 3.54,
+    "description": "lyft",
+    "sender": "5821240e17d9f90003c29f82"
+  }
+}
+
+## DELETE /api/transfers/{id}
+### Request
+need to specify transfer id
+### Response
+{
+  "success": "found and deleted transfer"
+}
