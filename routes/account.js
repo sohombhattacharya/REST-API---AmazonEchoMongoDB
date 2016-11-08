@@ -82,7 +82,7 @@ function postAccount(req, res){
                                                     res.json(response);
                                                 }
                                                 else{
-                                                    response = { success: "added customer", body: account1};    
+                                                    response = { success: "added account", body: account1};    
                                                     res.json(response);
                                                 }
                                             });                
