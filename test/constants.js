@@ -16,8 +16,35 @@ var DUMMY_CORRECT_ACCOUNT = {
       "type": "Credit Card",
       "nickname": "string",
       "rewards": 0,
-      "balance": 0,
+      "balance": 100.00,
       "account_number": "string",
+};
+var DUMMY_INCORRECT_ACCOUNT_2 = {
+      "type": "Credit Card",
+      "nickname": "string",
+      "rewards": 0,
+      "balance": -0.99,
+      "account_number": "string",
+};
+var DUMMY_CORRECT_TRANSFER = {
+        "type": "p2p",
+        "sender": "",
+        "receiver": "",
+        "amount": 99.99,
+        "description": "food"
+};
+var DUMMY_CORRECT_TRANSFER_1 = {
+        "type": "p2p",
+        "sender": "",
+        "receiver": "",
+        "amount": 100.01,
+        "description": "change"
+};
+var DUMMY_INCORRECT_TRANSFER = {
+        "type": "p2p",
+        "sender": "",
+        "receiver": "",
+        "description": "food"
 };
 var DUMMY_INCORRECT_ACCOUNT = {
       "type": "Checking",
@@ -28,7 +55,7 @@ var DUMMY_CORRECT_ACCOUNT_1 = {
       "type": "Savings",
       "nickname": "string",
       "rewards": 0,
-      "balance": 0,
+      "balance": 200.96,
       "account_number": "string",
 };
 var DUMMY_CORRECT_CUSTOMER_1 = {
@@ -68,6 +95,10 @@ module.exports = {
     TRANSFERS_URL: TRANSFERS_URL,
     DUMMY_CORRECT_CUSTOMER: DUMMY_CORRECT_CUSTOMER,
     DUMMY_CORRECT_ACCOUNT: DUMMY_CORRECT_ACCOUNT,
+    DUMMY_INCORRECT_ACCOUNT_2: DUMMY_INCORRECT_ACCOUNT_2,
+    DUMMY_CORRECT_TRANSFER: DUMMY_CORRECT_TRANSFER,
+    DUMMY_CORRECT_TRANSFER_1: DUMMY_CORRECT_TRANSFER_1,
+    DUMMY_INCORRECT_TRANSFER: DUMMY_INCORRECT_TRANSFER,
     DUMMY_CORRECT_ACCOUNT_1: DUMMY_CORRECT_ACCOUNT_1,
     DUMMY_INCORRECT_ACCOUNT: DUMMY_INCORRECT_ACCOUNT,
     DUMMY_CORRECT_CUSTOMER_UPDATE: DUMMY_CORRECT_CUSTOMER_UPDATE,

@@ -60,6 +60,7 @@ router.route("/accounts/:id")
     .put(account.updateAccount);
 
 router.route("/accounts/:id/transfers")
+    .get(transfer.getTransfersForAccount)
     .post(transfer.postTransfer);
 
 router.route("/transfers")

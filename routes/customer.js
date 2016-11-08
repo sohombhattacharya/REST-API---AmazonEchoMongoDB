@@ -17,16 +17,24 @@ function getCustomers(req, res){
 
 function postCustomer(req, res){
     var newCustomer = new Customer(req.body);
-    newCustomer.save(function(err, customer){
-        var response; 
-        if (err){
-            response = { error: "could not add new customer"};
-            res.json(response);
-        }
-        else{
-            response = { success: "added customer", body: customer};    
-            res.json(response);
-        }
+    newCustomer.validate(function(error){
+            if (error){
+                response = { error: "incorrectly formatted customer"};
+                res.json(response);
+            }
+            else{    
+                newCustomer.save(function(err, customer){
+                    var response; 
+                    if (err){
+                        response = { error: "could not add new customer"};
+                        res.json(response);
+                    }
+                    else{
+                        response = { success: "added customer", body: customer};    
+                        res.json(response);
+                    }
+                });
+            }
     });
 }
 

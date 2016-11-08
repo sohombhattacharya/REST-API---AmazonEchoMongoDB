@@ -14,6 +14,13 @@ describe('Customers', () => {
             else 
                 done(); 
         });
+    }); 
+    after((done) => {
+        Customer.remove({}, (err) => { 
+            if (err) throw err;
+            else 
+                done(); 
+        });
     });    
     describe("/POST Customers", () => {
         it('it should POST a correctly formatted Customer', (done) => {
@@ -578,7 +585,18 @@ describe("Accounts", () => {
                 done(); 
         });
     }); 
-    
+    after((done) => {
+        Customer.remove({}, (err) => { 
+            if (err) throw err;
+            else{
+                Account.remove({}, (err1) => { 
+                    if (err1) throw err1;
+                    else 
+                        done(); 
+                });            
+            }
+        });
+    });     
     describe("/POST Accounts", () => {
         it("it should POST an account to a Customer if he/she does not already have an account", (done) => {
             var options = {
@@ -609,6 +627,35 @@ describe("Accounts", () => {
                 }
             });                         
         });
+        it("it should NOT POST an account to a Customer if balance < 0", (done) => {
+            var options = {
+                url: constants.CUSTOMERS_URL,
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_CUSTOMER,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("success"); 
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + body.body._id + "/account", 
+                        method: 'POST',
+                        body: constants.DUMMY_INCORRECT_ACCOUNT_2,
+                        json: true
+                    }            
+                    request(options, function(error1, response1, body1) {
+                        if (error1) throw error1;  
+                        else{
+                            expect(response1.statusCode).to.equal(200);
+                            expect(body1).to.have.property("error");
+                            done(); 
+                        }
+                    });                    
+                }
+            });                         
+        });        
         it("it should NOT POST an account to a Customer if he/she already has an account", (done) => {
             var options = {
                 url: constants.CUSTOMERS_URL,
@@ -928,6 +975,47 @@ describe("Accounts", () => {
                 }
             });
         });
+        it('it should NOT UPDATE an Account with balance < 0', (done) => {
+           var options = {
+                url: constants.CUSTOMERS_URL,
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_CUSTOMER,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("success");             
+                    var options = {
+                        url: constants.CUSTOMERS_URL + "/" + body.body._id + "/account", 
+                        method: 'POST',
+                        body: constants.DUMMY_CORRECT_ACCOUNT,
+                        json: true
+                    }            
+                    request(options, function(error2, response2, body2) {
+                        if (error2) throw error2;  
+                        else{
+                            constants.DUMMY_INCORRECT_ACCOUNT_2.customer_id = body.body._id;
+                            var options = {
+                                url: constants.ACCOUNTS_URL + "/" + body2.body._id, 
+                                method: 'PUT',
+                                body: constants.DUMMY_INCORRECT_ACCOUNT_2,
+                                json: true
+                            }             
+                            request(options, function(error1, response1, body1) {
+                                if (error1) throw error1;  
+                                else{
+                                    expect(response1.statusCode).to.equal(200);
+                                    expect(body1).to.have.property("error"); 
+                                    done(); 
+                                }
+                            });                   
+                        }
+                    });  
+                }
+            });
+        });        
         it("it should NOT UPDATE an Account if it doesn't exist", (done) => {
            var options = {
                 url: constants.CUSTOMERS_URL,
@@ -1102,4 +1190,372 @@ describe("Accounts", () => {
             });
         });        
     });     
+});
+describe("Transfers", () => {
+    CUSTOMER1_id = "";
+    CUSTOMER2_id = "";
+    CUSTOMER1_ACCOUNT_id = "";
+    CUSTOMER2_ACCOUNT_id = ""; 
+    CUSTOMER1_ACCOUNT_TRANSFER_id = "";
+    before((done) => {
+        Transfer.remove({}, (err) => { 
+            if (err) throw err;
+            else{
+                var options = {
+                    url: constants.CUSTOMERS_URL,
+                    method: 'POST',
+                    body: constants.DUMMY_CORRECT_CUSTOMER,
+                    json: true
+                }            
+                request(options, function(error, response, body) {
+                    if (error) throw error;  
+                    else{
+                        expect(response.statusCode).to.equal(200);
+                        expect(body).to.have.property("success");
+                        CUSTOMER1_id = body.body._id;
+                        options = {
+                            url: constants.CUSTOMERS_URL,
+                            method: 'POST',
+                            body: constants.DUMMY_CORRECT_CUSTOMER_1,
+                            json: true
+                        }            
+                        request(options, function(error1, response1, body1) {
+                            if (error1) throw error1;  
+                            else{
+                                expect(response1.statusCode).to.equal(200);
+                                expect(body1).to.have.property("success");
+                                CUSTOMER2_id = body1.body._id; 
+                                options = {
+                                    url: constants.CUSTOMERS_URL + "/" + CUSTOMER1_id + "/account", 
+                                    method: 'POST',
+                                    body: constants.DUMMY_CORRECT_ACCOUNT,
+                                    json: true
+                                }            
+                                request(options, function(error2, response2, body2) {
+                                    if (error2) throw error2;  
+                                    else{
+                                        expect(response2.statusCode).to.equal(200);
+                                        expect(body2).to.have.property("success");
+                                        CUSTOMER1_ACCOUNT_id = body2.body._id;
+                                        options = {
+                                            url: constants.CUSTOMERS_URL + "/" + CUSTOMER2_id + "/account", 
+                                            method: 'POST',
+                                            body: constants.DUMMY_CORRECT_ACCOUNT_1,
+                                            json: true
+                                        }            
+                                        request(options, function(error3, response3, body3) {
+                                            if (error3) throw error3;  
+                                            else{
+                                                expect(response3.statusCode).to.equal(200);
+                                                expect(body3).to.have.property("success");
+                                                CUSTOMER2_ACCOUNT_id = body3.body._id;
+                                                done();
+                                            }
+                                        });                                        
+                                    }
+                                });
+                            }
+                        });                        
+                    }
+                });
+            } 
+        });
+    }); 
+//    after((done) => {
+//        Customer.remove({}, (err) => { 
+//            if (err) throw err;
+//            else{
+//                Account.remove({}, (err1) => { 
+//                    if (err1) throw err1;
+//                    else{
+//                        Transfer.remove({}, (err2) => {
+//                            if (err2) throw err2; 
+//                            else
+//                                done();
+//                        });
+//                    }
+//                });            
+//            }
+//        });
+//    });    
+    describe("/POST Transfers", () => {
+        it("it should POST a Transfer from an Account if amount < balance", (done) => {
+            var newTransfer = constants.DUMMY_CORRECT_TRANSFER;
+            newTransfer.sender = CUSTOMER1_ACCOUNT_id; 
+            newTransfer.receiver = CUSTOMER2_ACCOUNT_id; 
+            var options = {
+                url: constants.ACCOUNTS_URL + "/" + newTransfer.sender + "/transfers",
+                method: 'POST',
+                body: newTransfer,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("success"); 
+                    CUSTOMER1_ACCOUNT_TRANSFER_id = body.body._id;
+                    done();
+                } 
+            });
+        });
+        it("it should NOT POST a Transfer from an Account if amount > balance", (done) => {
+            var newTransfer = constants.DUMMY_CORRECT_TRANSFER_1;
+            newTransfer.sender = CUSTOMER1_ACCOUNT_id; 
+            newTransfer.receiver = CUSTOMER2_ACCOUNT_id; 
+            var options = {
+                url: constants.ACCOUNTS_URL + "/" + newTransfer.sender + "/transfers",
+                method: 'POST',
+                body: newTransfer,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error"); 
+                    done();
+                } 
+            });
+        });          
+        it("it should NOT POST a Transfer from an Account that does not exist", (done) => {
+            var newTransfer = constants.DUMMY_CORRECT_TRANSFER;
+            newTransfer.sender = "111"; 
+            newTransfer.receiver = CUSTOMER2_ACCOUNT_id; 
+            var options = {
+                url: constants.ACCOUNTS_URL + "/" + newTransfer.sender + "/transfers",
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_TRANSFER,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error");  
+                    done();
+                } 
+            });
+        });   
+        it("it should NOT POST a Transfer to an Account that does not exist", (done) => {
+            var newTransfer = constants.DUMMY_CORRECT_TRANSFER;
+            newTransfer.sender = CUSTOMER1_ACCOUNT_id; 
+            newTransfer.receiver = "111"; 
+            var options = {
+                url: constants.ACCOUNTS_URL + "/" + CUSTOMER1_ACCOUNT_id + "/transfers",
+                method: 'POST',
+                body: constants.DUMMY_CORRECT_TRANSFER,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error");  
+                    done();
+                } 
+            });
+        });         
+        it("it should NOT POST a Transfer to an Account with an incorrectly formatted transfer", (done) => {
+            var newTransfer = constants.DUMMY_CORRECT_TRANSFER;
+            newTransfer.sender = CUSTOMER1_ACCOUNT_id; 
+            newTransfer.receiver = CUSTOMER2_ACCOUNT_id; 
+            var options = {
+                url: constants.ACCOUNTS_URL + "/" + CUSTOMER1_ACCOUNT_id + "/transfers",
+                method: 'POST',
+                body: constants.DUMMY_INCORRECT_TRANSFER,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error");  
+                    done();
+                } 
+            });
+        });         
+    });
+    describe("/GET Transfers", () => {
+        it("it should GET Transfers for an Account", (done) => {
+            var options = {
+                url: constants.ACCOUNTS_URL + "/" + CUSTOMER1_ACCOUNT_id + "/transfers",
+                method: 'GET',
+                json: true
+            }            
+            request(options, function(error1, response1, body1) {
+                if (error1) throw error1;  
+                else{
+                    expect(response1.statusCode).to.equal(200);
+                    expect(body1.length).to.equal(1);
+                    done();
+                }
+            });    
+        });     
+        it("it should GET all Transfers", (done) => {
+            var options = {
+                url: constants.TRANSFERS_URL,
+                method: 'GET',
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body.length).to.equal(1);  
+                    done();
+                } 
+            });
+        });
+        it("it should GET specific Transfer based on id", (done) => {
+            var options = {
+                url: constants.TRANSFERS_URL + "/" + CUSTOMER1_ACCOUNT_TRANSFER_id,
+                method: 'GET',
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body._id).to.equal(CUSTOMER1_ACCOUNT_TRANSFER_id);  
+                    done();
+                } 
+            });
+        });  
+        it("it should NOT GET specific Transfer if the transfer id does not exist", (done) => {
+            var options = {
+                url: constants.TRANSFERS_URL + "/" + "111",
+                method: 'GET',
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error");  
+                    done();
+                } 
+            });
+        });  
+        it("it should NOT GET Transfers for an Account that does not exist", (done) => {
+            var options = {
+                url: constants.ACCOUNTS_URL + "/" + "111" + "/transfers",
+                method: 'GET',
+                json: true
+            }            
+            request(options, function(error1, response1, body1) {
+                if (error1) throw error1;  
+                else{
+                    expect(response1.statusCode).to.equal(200);
+                    expect(body1).to.have.property("error");
+                    done();
+                }
+            });        
+        });           
+    }); 
+    describe("/PUT Transfers", () => {
+        it("it should UPDATE a Transfer", (done) => {
+            var updatedTransfer = constants.DUMMY_CORRECT_TRANSFER_1;
+            updatedTransfer.sender = CUSTOMER1_ACCOUNT_id; 
+            updatedTransfer.receiver = CUSTOMER2_ACCOUNT_id; 
+            var options = {
+                url: constants.TRANSFERS_URL + "/" + CUSTOMER1_ACCOUNT_TRANSFER_id,
+                method: 'PUT',
+                body: updatedTransfer,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("success");
+                    expect(body.body.amount).to.equal(updatedTransfer.amount);
+                    expect(body.body.description).to.equal(updatedTransfer.description);
+                    done();
+                } 
+            });
+        });  
+        it("it should NOT UPDATE a Transfer if it does not exist", (done) => {
+            var updatedTransfer = constants.DUMMY_CORRECT_TRANSFER_1;
+            updatedTransfer.sender = CUSTOMER1_ACCOUNT_id; 
+            updatedTransfer.receiver = CUSTOMER2_ACCOUNT_id; 
+            var options = {
+                url: constants.TRANSFERS_URL + "/" + "111",
+                method: 'PUT',
+                body: updatedTransfer,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error");
+                    done();
+                } 
+            });
+        });
+        it("it should NOT UPDATE a Transfer with an incorrectly formatted transfer", (done) => {
+            var updatedTransfer = constants.DUMMY_INCORRECT_TRANSFER;
+            updatedTransfer.sender = CUSTOMER1_ACCOUNT_id; 
+            updatedTransfer.receiver = CUSTOMER2_ACCOUNT_id; 
+            var options = {
+                url: constants.TRANSFERS_URL + "/" + CUSTOMER1_ACCOUNT_TRANSFER_id,
+                method: 'PUT',
+                body: updatedTransfer,
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error");
+                    done();
+                } 
+            });
+        });        
+    });
+    describe("/DELETE Transfers", () => {
+        it("it should DELETE a specific Transfer based on id", (done) => {
+            var options = {
+                url: constants.TRANSFERS_URL + "/" + CUSTOMER1_ACCOUNT_TRANSFER_id,
+                method: 'DELETE',
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("success"); 
+                    options = {
+                        url: constants.TRANSFERS_URL + "/" + CUSTOMER1_ACCOUNT_TRANSFER_id,
+                        method: 'GET',
+                        json: true
+                    }            
+                    request(options, function(error, response, body) {
+                        if (error) throw error;  
+                        else{
+                            expect(response.statusCode).to.equal(200);
+                            expect(body).to.have.property("error");  
+                            done();
+                        } 
+                    });                    
+                } 
+            });
+        });
+        it("it should NOT DELETE a specific Transfer if the id does not exist", (done) => {
+            var options = {
+                url: constants.TRANSFERS_URL + "/" + "111",
+                method: 'GET',
+                json: true
+            }            
+            request(options, function(error, response, body) {
+                if (error) throw error;  
+                else{
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.have.property("error");  
+                    done();
+                } 
+            });
+        });          
+    }); 
 });
