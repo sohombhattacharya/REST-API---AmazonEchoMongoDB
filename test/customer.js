@@ -1261,23 +1261,23 @@ describe("Transfers", () => {
             } 
         });
     }); 
-//    after((done) => {
-//        Customer.remove({}, (err) => { 
-//            if (err) throw err;
-//            else{
-//                Account.remove({}, (err1) => { 
-//                    if (err1) throw err1;
-//                    else{
-//                        Transfer.remove({}, (err2) => {
-//                            if (err2) throw err2; 
-//                            else
-//                                done();
-//                        });
-//                    }
-//                });            
-//            }
-//        });
-//    });    
+    after((done) => {
+        Customer.remove({}, (err) => { 
+            if (err) throw err;
+            else{
+                Account.remove({}, (err1) => { 
+                    if (err1) throw err1;
+                    else{
+                        Transfer.remove({}, (err2) => {
+                            if (err2) throw err2; 
+                            else
+                                done();
+                        });
+                    }
+                });            
+            }
+        });
+    });    
     describe("/POST Transfers", () => {
         it("it should POST a Transfer from an Account if amount < balance", (done) => {
             var newTransfer = constants.DUMMY_CORRECT_TRANSFER;
